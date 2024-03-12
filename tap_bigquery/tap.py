@@ -27,6 +27,24 @@ class TapBigQuery(SQLTap):
             description="The path to the service account credentials file.",
         ),
         th.Property(
+            "credentials_base64",
+            th.StringType,
+            required=False,
+            description=(
+                "The base64 encoded service account credentials file. If provided, "
+                "this will be used instead of `credentials_path`."
+            )
+        ),
+        th.Property(
+            "credentials_json",
+            th.ObjectType,
+            required=False,
+            description=(
+                "The service account credentials as a JSON object. If provided, "
+                "this will be used instead of `credentials_path`."
+            )
+        ),
+        th.Property(
             "filter_schemas",
             th.ArrayType(th.StringType),
             required=False,

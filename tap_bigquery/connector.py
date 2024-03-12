@@ -30,16 +30,32 @@ class BigQueryConnector(SQLConnector):
             return sqlalchemy.create_engine(
                 self.sqlalchemy_url,
                 echo=False,
-                credentials_path=self.config.get("credentials_path"),
-                # json_serializer=self.serialize_json,
-                # json_deserializer=self.deserialize_json,
+                credentials_path=self.config.get("credentials_path")
+            )
+        elif self.config.get("credentials_json"):
+            if isinstance(self.config.get("credentials_json"), str):
+                import json
+                return sqlalchemy.create_engine(
+                    self.sqlalchemy_url,
+                    echo=False,
+                    credentials_info=json.loads(self.config.get("credentials_json"))
+                )
+            else:
+                return sqlalchemy.create_engine(
+                    self.sqlalchemy_url,
+                    echo=False,
+                    credentials_info=self.config.get("credentials_json")
+                )
+        elif self.config.get("credentials_base64"):
+            return sqlalchemy.create_engine(
+                self.sqlalchemy_url,
+                echo=False,
+                credentials_base64=self.config.get("credentials_base64")
             )
         else:
             return sqlalchemy.create_engine(
                 self.sqlalchemy_url,
-                echo=False,
-                # json_serializer=self.serialize_json,
-                # json_deserializer=self.deserialize_json,
+                echo=False
             )
 
     def get_sqlalchemy_url(self, config: dict) -> str:
