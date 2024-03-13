@@ -26,21 +26,24 @@ class BigQueryConnector(SQLConnector):
         Returns:
             A new SQLAlchemy Engine.
         """
+        connection_params = {
+            "url": self.sqlalchemy_url,
+            "echo": False,
+            "arraysize": self.config.get("fetch_size", 10000),
+            "use_query_cache": self.config.get("use_query_cache", True),
+        }
         if self.config.get("credentials_path"):
-            return sqlalchemy.create_engine(
-                self.sqlalchemy_url,
-                echo=False,
-                credentials_path=self.config.get("credentials_path"),
-                # json_serializer=self.serialize_json,
-                # json_deserializer=self.deserialize_json,
-            )
-        else:
-            return sqlalchemy.create_engine(
-                self.sqlalchemy_url,
-                echo=False,
-                # json_serializer=self.serialize_json,
-                # json_deserializer=self.deserialize_json,
-            )
+            connection_params["credentials_path"] = self.config.get("credentials_path")
+        elif self.config.get("credentials_json"):
+            if isinstance(self.config.get("credentials_json"), str):
+                import json
+                connection_params["credentials_info"] = json.loads(self.config.get("credentials_json"))
+            else:
+                connection_params["credentials_info"] = self.config.get("credentials_json")
+        elif self.config.get("credentials_base64"):
+            connection_params["credentials_base64"] = self.config.get("credentials_base64")
+
+        return sqlalchemy.create_engine(**connection_params).execution_options(yield_per=10000)
 
     def get_sqlalchemy_url(self, config: dict) -> str:
         """Concatenate a SQLAlchemy URL for use in connecting to the source."""
