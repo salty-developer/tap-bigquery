@@ -30,7 +30,6 @@ class BigQueryConnector(SQLConnector):
             "url": self.sqlalchemy_url,
             "echo": False,
             "arraysize": self.config.get("fetch_size", 10000),
-            "use_query_cache": self.config.get("use_query_cache", True),
         }
         if self.config.get("credentials_path"):
             connection_params["credentials_path"] = self.config.get("credentials_path")
