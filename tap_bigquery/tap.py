@@ -37,7 +37,7 @@ class TapBigQuery(SQLTap):
         ),
         th.Property(
             "credentials_json",
-            th.ObjectType,
+            th.StringType,
             required=False,
             description=(
                 "The service account credentials as a JSON object. If provided, "
